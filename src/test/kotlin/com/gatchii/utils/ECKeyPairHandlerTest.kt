@@ -1,6 +1,5 @@
-package com.getchii.utils
+package com.gatchii.utils
 
-import com.gatchii.utils.ECKeyPairHandler
 import com.gatchii.utils.ECKeyPairHandler.Companion.convertPrivateKey
 import com.gatchii.utils.ECKeyPairHandler.Companion.generatePublicKeyFromPrivateKey
 import io.ktor.util.*

@@ -1,6 +1,5 @@
 package com.gatchii.utils
 
-import com.gatchii.config.GlobalConfig
 import com.nimbusds.jose.jwk.RSAKey
 import java.nio.charset.StandardCharsets
 import java.security.*
@@ -46,25 +45,6 @@ class RsaPairHandler {
         private const val KEY_SIZE = 2048
         lateinit var rsaPublicKey: PublicKey
         lateinit var rsaPrivateKey: PrivateKey
-        init {
-            loadMainRsaPair()
-        }
-        private fun loadMainRsaPair() {
-            val secretPath = GlobalConfig.getConfigedValue("ktor.secret.path")
-            val rsaPrivateKeyStr = GlobalConfig.getConfigedValue("ktor.secret.privateKey")
-            val rsaPublicKeyStr = GlobalConfig.getConfigedValue("ktor.secret.publicKey")
-            rsaPrivateKey = if (rsaPrivateKeyStr.isNotBlank()) {
-                strToPrivateKey(rsaPrivateKeyStr)
-            } else {
-                strToPrivateKey(FileUtil.readFile(secretPath + "/private.pem")!!)
-            }
-
-            rsaPublicKey = (if (rsaPublicKeyStr.isNotBlank()) {
-                strToPublicKey(rsaPublicKeyStr)
-            } else {
-                strToPublicKey(FileUtil.readFile(secretPath + "/public.pem")!!)
-            })
-        }
 
         fun encrypt(textToEncrypt: String): String {
             return encrypt(textToEncrypt, rsaPublicKey)

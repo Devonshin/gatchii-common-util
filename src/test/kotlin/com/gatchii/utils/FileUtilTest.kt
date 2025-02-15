@@ -16,7 +16,7 @@ class FileUtilTest {
         val content = "Test content"
 
         // when
-        FileUtil.writeFile(path, content)
+        FileUtil.Companion.writeFile(path, content)
 
         // then
         val createdFile = File(path)
@@ -39,7 +39,7 @@ class FileUtilTest {
         file.writeText(initialContent)
 
         // when
-        FileUtil.writeFile(path, newContent)
+        FileUtil.Companion.writeFile(path, newContent)
 
         // then
         assertTrue(file.exists(), "File should exist")
@@ -58,7 +58,7 @@ class FileUtilTest {
         val file = File(path)
 
         // when
-        FileUtil.writeFile(path, content)
+        FileUtil.Companion.writeFile(path, content)
 
         // then
         assertTrue(file.exists(), "File should be created")
