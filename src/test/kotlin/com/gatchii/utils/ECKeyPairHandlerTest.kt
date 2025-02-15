@@ -2,7 +2,6 @@ package com.gatchii.utils
 
 import com.gatchii.utils.ECKeyPairHandler.Companion.convertPrivateKey
 import com.gatchii.utils.ECKeyPairHandler.Companion.generatePublicKeyFromPrivateKey
-import io.ktor.util.*
 import org.assertj.core.api.Assertions.assertThat
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.junit.jupiter.api.Assertions.*
@@ -62,8 +61,8 @@ class ECKeyPairHandlerTest {
     fun `test if convertPrivateKey generates PrivateKey from PEM format`() {
         // given
         val keyPair: KeyPair = ECKeyPairHandler.Companion.generateKeyPair()
-        val privateKeyPem = keyPair.private.encoded.encodeBase64()
-
+        val privateKeyPem = java.util.Base64.getEncoder().encodeToString(keyPair.private.encoded)
+        //println("privateKeyPem = $privateKeyPem")
         // when
         val privateKey: PrivateKey = convertPrivateKey(privateKeyPem)
 

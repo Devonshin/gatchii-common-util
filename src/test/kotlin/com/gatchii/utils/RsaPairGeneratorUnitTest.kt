@@ -1,6 +1,5 @@
 package com.gatchii.utils
 
-import io.ktor.util.logging.KtorSimpleLogger
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import shared.common.UnitTest
@@ -14,9 +13,6 @@ import kotlin.test.assertEquals
 
 @UnitTest
 class RsaPairGeneratorUnitTest {
-
-    val logger = KtorSimpleLogger("RsaPairGeneratorUnitTest")
-
 
     companion object {
         private lateinit var generateRsaPair: RsaKeyDataPair

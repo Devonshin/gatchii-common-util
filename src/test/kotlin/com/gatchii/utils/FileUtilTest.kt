@@ -3,8 +3,8 @@ package com.gatchii.utils
 import org.junit.jupiter.api.Test
 import shared.common.UnitTest
 import java.io.File
-import kotlin.test.assertTrue
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 @UnitTest
 class FileUtilTest {
@@ -26,6 +26,7 @@ class FileUtilTest {
         // Cleanup
         createdFile.delete()
         createdFile.parentFile?.delete()
+        createdFile.parentFile?.parentFile?.delete()
     }
 
     @Test
@@ -47,7 +48,8 @@ class FileUtilTest {
 
         // Cleanup
         file.delete()
-        file.parentFile?.delete()
+        file.parentFile?.deleteRecursively()
+
     }
 
     @Test

@@ -41,7 +41,7 @@ class ECKeyPairHandler {
             Signature.getInstance(SIGN_ALGORITHM, BouncyCastleProvider.PROVIDER_NAME).apply {
                 initSign(privateKey)
                 update(message.toByteArray(StandardCharsets.UTF_8))
-                return Base64.getUrlEncoder().encodeToString(sign())
+                return Base64.getEncoder().encodeToString(sign())
             }
         }
 
@@ -49,7 +49,7 @@ class ECKeyPairHandler {
             Signature.getInstance(SIGN_ALGORITHM, BouncyCastleProvider.PROVIDER_NAME).apply {
                 initVerify(publicKey)
                 update(message.toByteArray(StandardCharsets.UTF_8))
-                return verify(Base64.getUrlDecoder().decode(signature))
+                return verify(Base64.getDecoder().decode(signature))
             }
         }
 

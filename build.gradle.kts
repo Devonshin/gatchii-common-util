@@ -15,7 +15,7 @@ plugins {
 }
 
 group = "com.gatchii"
-version = "0.0.1"
+version = "0.0.2"
 
 publishing {
     repositories {
@@ -47,7 +47,6 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     // https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on
     implementation("org.bouncycastle:bcprov-jdk18on:1.79")

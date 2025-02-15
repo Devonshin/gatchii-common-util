@@ -1,6 +1,6 @@
 package com.gatchii.utils
 
-import io.ktor.util.logging.*
+import org.slf4j.Logger
 import java.io.File
 import java.io.IOException
 
@@ -12,7 +12,8 @@ import java.io.IOException
 
 class FileUtil {
     companion object {
-        val logger = KtorSimpleLogger(this::class.simpleName ?: "FileUtil")
+
+        val logger: Logger = org.slf4j.LoggerFactory.getLogger(this::class::simpleName.get())
 
         fun writeFile(path: String, content: String) {
             try {
