@@ -1,4 +1,4 @@
-package com.gatchii.common.task
+package com.gatchii.common.tasks
 
 import kotlinx.coroutines.Job
 import org.slf4j.LoggerFactory

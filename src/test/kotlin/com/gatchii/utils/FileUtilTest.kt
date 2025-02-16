@@ -1,5 +1,6 @@
 package com.gatchii.utils
 
+import com.gatchii.common.utils.FileUtil
 import org.junit.jupiter.api.Test
 import shared.common.UnitTest
 import java.io.File

@@ -1,5 +1,6 @@
 package com.gatchii.utils
 
+import com.gatchii.common.utils.BCryptPasswordEncoder
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import shared.common.UnitTest

@@ -1,6 +1,6 @@
-package com.gatchii.common.task
+package com.gatchii.common.tasks
 
-import com.gatchii.utils.DateUtil
+import com.gatchii.common.utils.DateUtil
 import kotlinx.coroutines.*
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime

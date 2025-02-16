@@ -1,5 +1,6 @@
 package com.gatchii.utils
 
+import com.gatchii.common.utils.DateUtil
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import shared.common.UnitTest

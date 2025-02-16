@@ -1,4 +1,4 @@
-package com.gatchii.utils
+package com.gatchii.common.utils
 
 import org.bouncycastle.jce.ECNamedCurveTable
 import org.bouncycastle.jce.provider.BouncyCastleProvider

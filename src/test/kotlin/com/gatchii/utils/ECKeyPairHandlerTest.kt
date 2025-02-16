@@ -1,7 +1,8 @@
 package com.gatchii.utils
 
-import com.gatchii.utils.ECKeyPairHandler.Companion.convertPrivateKey
-import com.gatchii.utils.ECKeyPairHandler.Companion.generatePublicKeyFromPrivateKey
+import com.gatchii.common.utils.ECKeyPairHandler
+import com.gatchii.common.utils.ECKeyPairHandler.Companion.convertPrivateKey
+import com.gatchii.common.utils.ECKeyPairHandler.Companion.generatePublicKeyFromPrivateKey
 import org.assertj.core.api.Assertions.assertThat
 import org.bouncycastle.jce.provider.BouncyCastleProvider
 import org.junit.jupiter.api.Assertions.*

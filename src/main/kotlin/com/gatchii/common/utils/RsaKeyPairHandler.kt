@@ -1,5 +1,6 @@
 package com.gatchii.utils
 
+import com.gatchii.common.utils.FileUtil
 import com.nimbusds.jose.jwk.RSAKey
 import java.nio.charset.StandardCharsets
 import java.security.*
@@ -40,11 +41,57 @@ class RsaPairHandler {
 
     companion object {
 
+        private val logger = org.slf4j.LoggerFactory.getLogger(this::class::simpleName.get())
         private const val ALGORITHM = "RSA"
         private const val TRANSFORMATION = "RSA/ECB/PKCS1Padding"
         private const val KEY_SIZE = 2048
-        lateinit var rsaPublicKey: PublicKey
-        lateinit var rsaPrivateKey: PrivateKey
+        private lateinit var rsaPublicKey: PublicKey
+        private lateinit var rsaPrivateKey: PrivateKey
+
+        fun init(publicKeyStr: String, privateKeyStr: String) {
+            logger.debug("init rsa key pair")
+            rsaPublicKey = strToPublicKey(publicKeyStr)
+            rsaPrivateKey = strToPrivateKey(privateKeyStr)
+        }
+
+        init {
+            loadMainRsaPair()
+        }
+
+        private fun loadMainRsaPair() {
+            val secretPath = System.getenv("secret.gatchii.rsa.path") ?: "${FileUtil.getActualPath()}/gatchii_secret"
+            val rsaPrivateKeyStr = System.getenv("secret.gatchii.rsa.privateKey") ?: ""
+            val rsaPublicKeyStr = System.getenv("secret.gatchii.rsa.privateKey") ?: ""
+            logger.debug("load main rsa pair: secretPath [$secretPath]")
+            val generateRSAKeyPair = generateRSAKeyPair()
+            rsaPrivateKey = if (rsaPrivateKeyStr.isNotBlank()) {
+                strToPrivateKey(rsaPrivateKeyStr)
+            } else {
+                if (FileUtil.existFile("$secretPath/rsa_private.pem")) {
+                    strToPrivateKey(FileUtil.readFile("$secretPath/rsa_private.pem")!!)
+                } else {
+                    FileUtil.writeFile(
+                        "$secretPath/rsa_private.pem",
+                        "-----BEGIN RSA PRIVATE KEY-----${encodeToStr(generateRSAKeyPair.private.encoded)}-----END RSA PRIVATE KEY-----"
+                    )
+                    generateRSAKeyPair.private
+                }
+            }
+            rsaPublicKey = if (rsaPublicKeyStr.isNotBlank()) {
+                strToPublicKey(rsaPublicKeyStr)
+            } else {
+                if (FileUtil.existFile("$secretPath/rsa_public.pem")) {
+                    strToPublicKey(FileUtil.readFile("$secretPath/rsa_public.pem")!!)
+                } else {
+                    FileUtil.writeFile(
+                        "$secretPath/rsa_public.pem",
+                        "-----BEGIN RSA PUBLIC KEY-----${encodeToStr(generateRSAKeyPair.public.encoded)}-----END RSA PUBLIC KEY-----"
+                    )
+                    generateRSAKeyPair.public
+                }
+            }
+        }
+
 
         fun encrypt(textToEncrypt: String): String {
             return encrypt(textToEncrypt, rsaPublicKey)

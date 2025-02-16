@@ -1,4 +1,4 @@
-package com.gatchii.utils
+package com.gatchii.common.utils
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -26,7 +26,7 @@ class FileUtil {
                     file.renameTo(
                         File(
                             file.parent,
-                            "${file.nameWithoutExtension}_${DateUtil.getCurrentDate().toEpochSecond()}.${file.extension}"
+                            "${file.nameWithoutExtension}_${DateUtil.Companion.getCurrentDate().toEpochSecond()}.${file.extension}"
                         ))
                 }
                 file.writeText(content)
@@ -44,5 +44,12 @@ class FileUtil {
             }
         }
 
+        fun existFile(path: String): Boolean {
+            return File(path).exists()
+        }
+
+        fun getActualPath(): String {
+            return File(".").absolutePath
+        }
     }
 }
