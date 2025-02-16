@@ -2,6 +2,7 @@ val mockkVersion: String by project
 val kotlinVersion: String by project
 val logbackVersion: String by project
 val jbcryptVersion: String by project
+val kotlinCoroutines: String by project
 //val ktorVersion: String by project
 
 plugins {
@@ -15,7 +16,7 @@ plugins {
 }
 
 group = "com.gatchii"
-version = "0.0.3"
+version = "0.0.4"
 
 publishing {
     repositories {
@@ -47,6 +48,7 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutines")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     // https://mvnrepository.com/artifact/org.bouncycastle/bcprov-jdk18on
     implementation("org.bouncycastle:bcprov-jdk18on:1.79")
@@ -58,6 +60,7 @@ dependencies {
     testImplementation("io.mockk:mockk:${mockkVersion}")
     testImplementation("org.assertj:assertj-core:3.11.1")
     testImplementation(kotlin("test"))
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:$kotlinCoroutines")
     testImplementation("org.junit.jupiter:junit-jupiter:5.8.1")
 }
 
@@ -72,7 +75,6 @@ tasks.register("unitTest", Test::class) {
         includeTags("unitTest")
     }
 }
-
 
 tasks.processResources {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE

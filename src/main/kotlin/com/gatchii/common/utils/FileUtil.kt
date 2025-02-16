@@ -1,6 +1,7 @@
 package com.gatchii.utils
 
 import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.io.File
 import java.io.IOException
 
@@ -13,7 +14,7 @@ import java.io.IOException
 class FileUtil {
     companion object {
 
-        val logger: Logger = org.slf4j.LoggerFactory.getLogger(this::class::simpleName.get())
+        val logger: Logger = LoggerFactory.getLogger(this::class::simpleName.get())
 
         fun writeFile(path: String, content: String) {
             try {
