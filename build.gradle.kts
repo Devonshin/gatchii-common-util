@@ -7,7 +7,7 @@ val kotlinCoroutines: String by project
 
 plugins {
     kotlin("jvm") version "2.1.0"
-    id("io.ktor.plugin") version "3.1.0"
+    //id("io.ktor.plugin") version "3.1.0"
     //id("io.ktor.plugin") version "2.3.13"
     id("org.jetbrains.kotlin.plugin.serialization") version "2.1.0"
     id("idea")
@@ -16,7 +16,7 @@ plugins {
 }
 
 group = "com.gatchii"
-version = "0.0.6"
+version = "0.0.8"
 
 publishing {
     repositories {
@@ -34,12 +34,6 @@ publishing {
             from(components["java"])
         }
     }
-}
-
-application {
-    mainClass.set("io.ktor.server.netty.EngineMain")
-    val isDevelopment: Boolean = project.ext.has("development")
-    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
 }
 
 repositories {
