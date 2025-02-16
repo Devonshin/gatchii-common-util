@@ -59,11 +59,6 @@ To run the test suite:
 ``` bash
 ./gradlew test
 ```
-### **Publishing to GitHub Packages**
-To publish the library to GitHub Packages:
-``` bash
-./gradlew publish
-```
 Ensure you have the necessary credentials set up as mentioned in the "Authenticating with GitHub Packages" section.
 ## **Contributing**
 Contributions are welcome!

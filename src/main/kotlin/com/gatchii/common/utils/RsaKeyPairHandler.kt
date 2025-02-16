@@ -1,7 +1,7 @@
-package com.gatchii.utils
+package com.gatchii.common.utils
 
-import com.gatchii.common.utils.FileUtil
 import com.nimbusds.jose.jwk.RSAKey
+import org.slf4j.LoggerFactory
 import java.nio.charset.StandardCharsets
 import java.security.*
 import java.security.interfaces.RSAPublicKey
@@ -41,7 +41,7 @@ class RsaPairHandler {
 
     companion object {
 
-        private val logger = org.slf4j.LoggerFactory.getLogger(this::class::simpleName.get())
+        private val logger = LoggerFactory.getLogger(this::class::simpleName.get())
         private const val ALGORITHM = "RSA"
         private const val TRANSFORMATION = "RSA/ECB/PKCS1Padding"
         private const val KEY_SIZE = 2048
