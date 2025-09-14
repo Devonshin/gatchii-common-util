@@ -1,75 +1,192 @@
 # gatchii-common-util
-A Kotlin-based utility library for common tasks, ready to be integrated and distributed through **GitHub Packages**.
-## **Features**
-- Handy utility functions for everyday programming needs.
-- Designed with Kotlin best practices.
-- Full integration with GitHub Packages for easy publishing and usage.
 
-## **Requirements**
-- Kotlin version: **2**
-- Java version: **21**
-- Gradle version: **7.x+**
+[![CI](https://github.com/Devonshin/gatchii-common-util/actions/workflows/ci.yml/badge.svg)](https://github.com/Devonshin/gatchii-common-util/actions/workflows/ci.yml)
 
-## **Setup**
-### **1. Adding the Dependency**
-### 
-To include `gatchii-common-util` in your project, you need to add **GitHub Packages Repository** as a dependency repository in your `build.gradle` or `build.gradle.kts` file.
-#### Groovy (build.gradle)
-``` 
+A Kotlin JVM utility library with reusable components for:
+- Cryptography helpers: RSA key pair utilities (PEM/JWK conversion, encrypt/decrypt), EC (secp256r1) key operations and ECDSA sign/verify.
+- Security: BCrypt password hashing.
+- File helpers: simple read/write with rotation on overwrite, path utilities.
+- Date/time helpers: test-friendly clock utilities and readable duration formatting.
+- Lightweight task scheduling primitives built on Kotlin coroutines (one-time and daily routine tasks with simple "leader" gating).
+
+Published to GitHub Packages; built with Gradle Kotlin DSL.
+
+## Stack
+- Language: Kotlin 2.1.0 (JVM)
+- JDK: 21
+- Build tool: Gradle 8.10 (wrapper included)
+- Plugins: kotlin-jvm, kotlin-serialization, kotlin-power-assert, idea, maven-publish
+- Logging: SLF4J + Logback
+- Test: JUnit 5, MockK, kotlinx-coroutines-test
+- Crypto libs: BouncyCastle, jose4j, nimbus-jose-jwt, jbcrypt
+
+## Requirements
+- Java 21 (Temurin recommended)
+- Git (to clone)
+- No standalone installation of Gradle required — use the provided wrapper: `./gradlew`
+
+## Installation / Using as a dependency
+Artifacts are published to GitHub Packages under this repository.
+
+Gradle Groovy (build.gradle)
+```
 repositories {
     maven {
         url = uri("https://maven.pkg.github.com/Devonshin/gatchii-common-util")
+        credentials {
+            username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_USERNAME")
+            password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+        }
     }
 }
 
 dependencies {
-    implementation "com.gatchii:gatchii-common-util:{VERSION}"
+    implementation "com.gatchii:gatchii-common-util:0.0.8" // TODO: verify latest version
 }
 ```
-#### Kotlin DSL (build.gradle.kts)
+
+Gradle Kotlin DSL (build.gradle.kts)
 ```
 repositories {
     maven {
         url = uri("https://maven.pkg.github.com/Devonshin/gatchii-common-util")
+        credentials {
+            username = findProperty("gpr.user") as String? ?: System.getenv("GITHUB_USERNAME")
+            password = findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+        }
     }
 }
 
 dependencies {
-    implementation("com.gatchii:gatchii-common-util:{VERSION}")
+    implementation("com.gatchii:gatchii-common-util:0.0.8") // TODO: verify latest version
 }
 ```
 
-## **Usage NOT YET WRITE**
-After adding the dependency, you can start using the utilities from `gatchii-common-util`:
-``` kotlin
-import com.gatchii.utils.SomeUtility
+You can also put credentials into your ~/.gradle/gradle.properties:
+```
+gpr.user=YOUR_GH_USERNAME
+gpr.key=YOUR_GH_TOKEN   # Token must have read:packages scope
+```
 
-fun main() {
-    
+## Quick start examples
+
+RSA (encrypt/decrypt, generate files automatically)
+```kotlin
+import com.gatchii.common.utils.RsaPairHandler
+
+fun demoRsa() {
+    val cipher = RsaPairHandler.encrypt("hello")
+    val plain = RsaPairHandler.decrypt(cipher)
+    println(plain)
 }
 ```
-## **Development**
-### **Building the Project**
-To build the project locally:
-``` bash
-./gradlew build
-```
-### **Running Tests**
-To run the test suite:
-``` bash
-./gradlew test
-```
-Ensure you have the necessary credentials set up as mentioned in the "Authenticating with GitHub Packages" section.
-## **Contributing**
-Contributions are welcome!
-Feel free to submit issues, suggestions, or pull requests to help make this project better.
-1. Fork this repository.
-2. Create a new branch with your feature/fix (`git checkout -b feature-name`).
-3. Commit your changes (`git commit -m "Add new feature"`).
-4. Push to the branch (`git push origin feature-name`).
-5. Open a pull request.
 
-## **License**
-This project is licensed under the [MIT License](LICENSE).
-### **Contact**
-For support or inquiries, please contact [Devonshin](mailto:devonshin@example.com) via email or through GitHub Issues.
+EC (secp256r1) sign/verify
+```kotlin
+import com.gatchii.common.utils.ECKeyPairHandler
+
+fun demoEc() {
+    val kp = ECKeyPairHandler.generateKeyPair()
+    val msg = "message"
+    val sig = ECKeyPairHandler.sign(msg, kp.private)
+    check(ECKeyPairHandler.verify(msg, kp.public, sig))
+}
+```
+
+BCrypt
+```kotlin
+import com.gatchii.common.utils.BCryptPasswordEncoder
+
+val encoder = BCryptPasswordEncoder()
+val hashed = encoder.encode("secret")
+check(encoder.matches("secret", hashed))
+```
+
+Routine task (runs a task daily at a given time; immediate run if already past)
+```kotlin
+import com.gatchii.common.tasks.RoutineTaskHandler
+import com.gatchii.common.tasks.RoutineScheduleExpression
+
+val handler = RoutineTaskHandler(
+    taskName = "sampleTask",
+    scheduleExpression = RoutineScheduleExpression(hour = 1, minute = 0, second = 0),
+    task = { println("do work") }
+)
+com.gatchii.common.tasks.TaskLeadHandler.addTasks(handler)
+com.gatchii.common.tasks.TaskLeadHandler.runTasks()
+```
+
+## Environment variables
+These are read by the code or build during runtime/CI:
+- GITHUB_USERNAME, GITHUB_TOKEN — used by Gradle publishing and CI to authenticate with GitHub Packages.
+- secret.gatchii.rsa.path — directory containing RSA key files (defaults to `./gatchii_secret`).
+- secret.gatchii.rsa.privateKey — private key (PEM, Base64-encoded body). Supports both `-----BEGIN RSA PRIVATE KEY-----` and `-----BEGIN PRIVATE KEY-----` headers; whitespace/newlines are ignored.
+- secret.gatchii.rsa.publicKey — public key (PEM, Base64-encoded body). Supports both `-----BEGIN RSA PUBLIC KEY-----` and `-----BEGIN PUBLIC KEY-----` headers; whitespace/newlines are ignored.
+
+When keys are not provided, a new RSA key pair is generated on startup and written to:
+- gatchii_secret/rsa_private.pem
+- gatchii_secret/rsa_public.pem
+
+## Build, test, and publish
+- Build: `./gradlew build`
+- Run tests: `./gradlew test`
+  - Tag-based filtering (JUnit 5): `./gradlew test -Djunit.jupiter.tags=unitTest`
+  - Custom unit tests task: `./gradlew unitTest` (runs tests tagged with `@UnitTest`)
+  - Specific class: `./gradlew test --tests "com.gatchii.common.utils.RsaPairGeneratorUnitTest"`
+- Coverage report: `./gradlew jacocoTestReport` (HTML: `build/reports/jacoco/test/html/index.html`)
+- Publish to GitHub Packages (requires env vars above): `./gradlew publish`
+
+## Project structure
+```
+.
+├── build.gradle.kts
+├── settings.gradle.kts
+├── gradle.properties
+├── src
+│   ├── main
+│   │   ├── kotlin
+│   │   │   ├── com/gatchii/common/utils/ (BCryptPasswordEncoder, DateUtil, ECKeyPairHandler, FileUtil, RsaKeyPairHandler)
+│   │   │   └── com/gatchii/common/tasks/ (TaskLeadHandler, OnetimeTaskHandler, RoutineTaskHandler)
+│   │   └── resources/
+│   └── test
+│       └── kotlin/ (JUnit 5 tests, tags: @UnitTest, @IntegrationTest)
+├── local-doc/ (project notes: API_REFERENCE.md, PROJECT_INDEX.md)
+└── .github/workflows/publish.yaml (CI build & publish)
+```
+
+## Continuous Integration / Delivery
+
+This repository uses GitHub Actions CI to build, test, lint, and generate coverage reports on each push/PR.
+
+- Workflow file: .github/workflows/ci.yml
+- Steps: checkout → setup-java (JDK 21) → gradlew clean test jacocoTestReport detekt ktlintCheck
+- Artifacts uploaded:
+  - JUnit test report: build/reports/tests/test/
+  - JaCoCo coverage report: build/reports/jacoco/test/
+  - Detekt report: build/reports/detekt/
+  - KtLint report: build/reports/ktlint/
+
+CI status badge is shown at the top of this README. Click it to view latest run and download artifacts.
+A GitHub Actions workflow builds on push to `main` and publishes on GitHub Release creation:
+- Uses Temurin JDK 21
+- Steps: checkout → gradle build → gradle publish (with GITHUB_USERNAME/TOKEN)
+See `.github/workflows/publish.yaml` for details.
+
+## Scripts / Gradle tasks
+- build — compile and run tests
+- test — run all tests
+- unitTest — run only tests tagged with `@UnitTest`
+- publish — publish Maven artifacts to GitHub Packages
+
+## Notes
+- There is a simple `Main.kt` that prints "Hello World!". This project is primarily a library; no application plugin is configured.
+- Crypto utilities depend on BouncyCastle; ensure the provider is available (EC utilities add it on demand).
+
+## License
+TODO: Add a LICENSE file and state the license for this repository.
+
+## Contributing
+Contributions are welcome! Feel free to open issues or send pull requests.
+
+## Contact
+TODO: Add maintainer contact information or point to GitHub Issues.

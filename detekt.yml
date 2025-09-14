@@ -1,0 +1,39 @@
+detekt:
+  build:
+    maxIssues: 0
+  processors:
+    active: true
+  config:
+    validation: true
+  reports:
+    active: true
+
+style:
+  MagicNumber:
+    active: false
+  MaxLineLength:
+    active: false
+  WildcardImport:
+    active: false
+  NewLineAtEndOfFile:
+    active: false
+  UtilityClassWithPublicConstructor:
+    active: false
+
+naming:
+  InvalidPackageDeclaration:
+    active: false
+
+complexity:
+  TooManyFunctions:
+    active: false
+
+exceptions:
+  TooGenericExceptionThrown:
+    active: false
+
+# Relax rules in test sources
+test-pattern:
+  active: true
+  patterns: ['**/test/**', '**/androidTest/**']
+  exclude-rules: ['Style/NewLineAtEndOfFile', 'style/MagicNumber', 'style/MaxLineLength']

@@ -41,7 +41,7 @@ class RsaPairHandler {
 
     companion object {
 
-        private val logger = LoggerFactory.getLogger(this::class::simpleName.get())
+        private val logger = LoggerFactory.getLogger(RsaPairHandler::class.java)
         private const val ALGORITHM = "RSA"
         private const val TRANSFORMATION = "RSA/ECB/PKCS1Padding"
         private const val KEY_SIZE = 2048
@@ -61,7 +61,7 @@ class RsaPairHandler {
         private fun loadMainRsaPair() {
             val secretPath = System.getenv("secret.gatchii.rsa.path") ?: "${FileUtil.getActualPath()}/gatchii_secret"
             val rsaPrivateKeyStr = System.getenv("secret.gatchii.rsa.privateKey") ?: ""
-            val rsaPublicKeyStr = System.getenv("secret.gatchii.rsa.privateKey") ?: ""
+            val rsaPublicKeyStr = System.getenv("secret.gatchii.rsa.publicKey") ?: ""
             logger.debug("load main rsa pair: secretPath [$secretPath]")
             val generateRSAKeyPair = generateRSAKeyPair()
             rsaPrivateKey = if (rsaPrivateKeyStr.isNotBlank()) {
@@ -125,26 +125,30 @@ class RsaPairHandler {
         }
 
         @Throws(InvalidKeySpecException::class, NoSuchAlgorithmException::class)
-        fun strToPublicKey(publicKeyStr: String): PublicKey {
-            val publicKeyStr = publicKeyStr.replace("-----BEGIN RSA PUBLIC KEY-----", "")
+fun strToPublicKey(publicKeyStr: String): PublicKey {
+            val normalized = publicKeyStr
+                .replace("-----BEGIN RSA PUBLIC KEY-----", "")
                 .replace("-----END RSA PUBLIC KEY-----", "")
-                .replace("\\s", "")
-                .replace("\n", "")
+                .replace("-----BEGIN PUBLIC KEY-----", "")
+                .replace("-----END PUBLIC KEY-----", "")
+                .replace(Regex("\\s"), "")
 
-            val keyBytes: ByteArray = decodeFromStr(publicKeyStr)
+            val keyBytes: ByteArray = decodeFromStr(normalized)
             val spec = X509EncodedKeySpec(keyBytes)
             val keyFactory = KeyFactory.getInstance(ALGORITHM)
             return keyFactory.generatePublic(spec)
         }
 
-        fun strToPrivateKey(privateKeyStr: String): PrivateKey {
-            val privateKeyStr = privateKeyStr.replace("-----BEGIN RSA PRIVATE KEY-----", "")
+fun strToPrivateKey(privateKeyStr: String): PrivateKey {
+            val normalized = privateKeyStr
+                .replace("-----BEGIN RSA PRIVATE KEY-----", "")
                 .replace("-----END RSA PRIVATE KEY-----", "")
-                .replace("\\s", "")
-                .replace("\n", "")
+                .replace("-----BEGIN PRIVATE KEY-----", "")
+                .replace("-----END PRIVATE KEY-----", "")
+                .replace(Regex("\\s"), "")
 
             val kf = KeyFactory.getInstance(ALGORITHM)
-            val keySpecPKCS8 = PKCS8EncodedKeySpec(decodeFromStr(privateKeyStr))
+            val keySpecPKCS8 = PKCS8EncodedKeySpec(decodeFromStr(normalized))
             val privateKey = kf.generatePrivate(keySpecPKCS8)
             return privateKey
         }

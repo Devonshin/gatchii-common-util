@@ -8,7 +8,7 @@ class OnetimeTaskHandler(
     private val task: () -> Unit
 ): TaskLeadHandler(taskName) {
 
-    val logger: Logger = LoggerFactory.getLogger(this::class.simpleName?: "OnetimeTaskLeadHandler")
+private val logger: Logger = LoggerFactory.getLogger(OnetimeTaskHandler::class.java)
 
     init {
         logger.info("OnetimeTaskHandler init")

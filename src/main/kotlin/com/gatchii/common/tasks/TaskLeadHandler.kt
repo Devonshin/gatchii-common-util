@@ -19,9 +19,9 @@ abstract class TaskLeadHandler (
         return taskName
     }
 
-    companion object {
+companion object {
 
-        private val logger = LoggerFactory.getLogger(this::class.simpleName?: "TaskLeadHandler")
+        private val logger = LoggerFactory.getLogger(TaskLeadHandler::class.java)
 
         private val tasks = mutableListOf<TaskLeadHandler>()
         private val taskNameSet = mutableSetOf<String>()
@@ -29,7 +29,7 @@ abstract class TaskLeadHandler (
         // Adds a new task to the list, ensuring no duplicate task names.
         fun addTasks(taskHandler: TaskLeadHandler) {
             val taskName = taskHandler.taskName()
-            if (taskNameSet.contains(taskName)) throw Exception("Task [${taskName}] already exists")
+if (taskNameSet.contains(taskName)) throw IllegalStateException("Task [$taskName] already exists")
             logger.info("Add task {}", taskName)
             taskNameSet.add(taskName)
             tasks.add(taskHandler)
@@ -46,9 +46,10 @@ abstract class TaskLeadHandler (
         fun runTasks() {
             logger.info("Running tasks...")
             if (isLeader()) {
-                tasks.forEach {
-                    logger.info("Run leader task...${it.taskName()}")
-                    it.startTask()
+                // Iterate over a snapshot to avoid ConcurrentModificationException when tasks remove themselves
+                for (t in tasks.toList()) {
+                    logger.info("Run leader task...${t.taskName()}")
+                    t.startTask()
                 }
             }
         }

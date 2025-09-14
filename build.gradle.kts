@@ -12,6 +12,9 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "2.1.0"
     id("idea")
     kotlin("plugin.power-assert") version "2.0.0"
+    jacoco
+    id("io.gitlab.arturbosch.detekt") version "1.23.6"
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
     `maven-publish`
 }
 
@@ -40,6 +43,12 @@ repositories {
     mavenCentral()
 }
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(21))
+    }
+}
+
 dependencies {
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutines")
@@ -60,6 +69,56 @@ dependencies {
 
 tasks.test {
     useJUnitPlatform()
+    testLogging {
+        events(org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED,
+               org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED,
+               org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED)
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        showStandardStreams = false
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.11"
+}
+
+// 정적 분석: detekt 기본 설정 (별도 설정 파일 없이 기본 규칙 사용)
+detekt {
+    buildUponDefaultConfig = true
+    allRules = false
+    autoCorrect = false
+    // Use default rules; custom config is disabled to avoid schema mismatches
+    ignoreFailures = true
+}
+
+// 정적 분석: ktlint 기본 설정 (플러그인 기본값 사용)
+ktlint {
+    ignoreFailures.set(true)
+    disabledRules.set(setOf("no-wildcard-imports","final-newline","max-line-length","filename","package-name"))
+}
+
+// 품질 태스크를 check 파이프라인에 연결
+tasks.named("check") {
+    dependsOn("detekt", "ktlintCheck")
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        csv.required.set(false)
+    }
+    // 커버리지 제외 설정: 라이브러리 동작과 무관한 샘플 엔트리포인트 등 제외
+    classDirectories.setFrom(
+        files(classDirectories.files.map {
+            fileTree(it) {
+                exclude(
+                    "com/gatchii/MainKt*.*"
+                )
+            }
+        })
+    )
 }
 
 tasks.register("unitTest", Test::class) {

@@ -6,6 +6,7 @@ import kotlinx.coroutines.test.advanceTimeBy
 import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import shared.common.UnitTest
 
@@ -73,5 +74,35 @@ class RoutineTaskHandlerTest {
         assert(taskExecutedCount == 4) { "Task should execute immediately when current time is after scheduled time" }
     }
 
+    @Test
+    @DisplayName("Should execute once when within 30 seconds tolerance of scheduled time")
+    fun `should execute once within 30 seconds window`() = runTest {
+        // given: schedule is 10 seconds ahead of 'now'
+        val now = java.time.LocalDateTime.now()
+        val schedule = now.plusSeconds(10)
+        val scheduleExpression = RoutineScheduleExpression(
+            hour = schedule.hour,
+            minute = schedule.minute,
+            second = schedule.second
+        )
+        var taskExecutedCount = 0
+        val task: () -> Unit = { taskExecutedCount++ }
+        val handler = RoutineTaskHandler(
+            taskName = "testTask", // enables test clock
+            scheduleExpression = scheduleExpression,
+            task = task,
+            period = 24 * 60 * 60, // 1 day
+            scope = this
+        )
 
+        // when
+        handler.startTask()
+        // advance by 70 seconds (past the first execution, before next day)
+        advanceTimeBy(70 * 1000)
+        runCurrent()
+
+        // then
+        handler.stopTask()
+        assert(taskExecutedCount == 1) { "Task should execute once within 30 seconds tolerance and not schedule again until next period" }
+    }
 }

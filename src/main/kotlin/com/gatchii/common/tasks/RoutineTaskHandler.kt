@@ -1,7 +1,11 @@
 package com.gatchii.common.tasks
 
 import com.gatchii.common.utils.DateUtil
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import org.slf4j.LoggerFactory
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -22,7 +26,7 @@ class RoutineTaskHandler(
     private val period: Long = 24 * 60 * 60L,
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.Default), // 기본값 설정
 ) : TaskLeadHandler(taskName) {
-    private val logger = LoggerFactory.getLogger(this::class.simpleName ?: "RoutineTaskHandler")
+private val logger = LoggerFactory.getLogger(RoutineTaskHandler::class.java)
 
     private val oneDaySec: Long = 24 * 60 * 60L
     var delayTimeSec = 0L

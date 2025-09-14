@@ -14,7 +14,7 @@ import java.io.IOException
 class FileUtil {
     companion object {
 
-        val logger: Logger = LoggerFactory.getLogger(this::class::simpleName.get())
+        private val logger: Logger = LoggerFactory.getLogger(FileUtil::class.java)
 
         fun writeFile(path: String, content: String) {
             try {

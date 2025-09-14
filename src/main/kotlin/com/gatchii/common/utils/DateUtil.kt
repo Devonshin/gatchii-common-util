@@ -38,8 +38,8 @@ class DateUtil {
             return OffsetDateTime.now()
         }
 
-        fun toReaderbleTimeFromSeconds(totalSeconds: Long): String {
-            if(totalSeconds < 0) throw IllegalArgumentException()
+fun toReaderbleTimeFromSeconds(totalSeconds: Long): String {
+            require(totalSeconds >= 0) { "totalSeconds must be >= 0" }
             val day = totalSeconds / (3600 * 24)
             val hours = (totalSeconds % (3600 * 24)) / 3600
             val minutes = (totalSeconds % 3600) / 60
