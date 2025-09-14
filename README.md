@@ -41,7 +41,7 @@ repositories {
 }
 
 dependencies {
-    implementation "com.gatchii:gatchii-common-util:0.0.8" // TODO: verify latest version
+implementation "com.gatchii:gatchii-common-util:0.0.9" // TODO: verify latest version
 }
 ```
 
@@ -58,7 +58,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.gatchii:gatchii-common-util:0.0.8") // TODO: verify latest version
+implementation("com.gatchii:gatchii-common-util:0.0.9") // TODO: verify latest version
 }
 ```
 
